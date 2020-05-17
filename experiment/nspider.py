@@ -11,6 +11,7 @@ import pandas as pd
 
 from datetime import datetime, timedelta, timezone
 from dateutil.relativedelta import relativedelta
+from dateutil.parser import parse
 
 import requests
 from lxml import html
@@ -26,6 +27,7 @@ from numba import jit
 
 import sidekit
 from PaperCrawler import paper_crawler
+
 
 _ns = {'re': 'http://exslt.org/regular-expressions'}
 
@@ -49,7 +51,7 @@ search_gds_by_uid = "/gds/?term=%s[uid]"
 
 columns = {
     'gds': ['gds_uid', 'term', 'taxid', 'doi'],
-    'publication': ['doi', 'pmid', 'is_free_pmc', 'title', 'abstract'],
+    'publication': ['doi', 'pmid', 'is_free_pmc', 'title', 'abstract', 'successful_donwload'],
     'source': ['doi', 'src_domain', 'link_to_paper'],
 }
 
@@ -65,16 +67,8 @@ def word_level_comprehension_score(src, tgt):
 class nspider():
 
     def __init__(self, working_dir, executable_path, download_path, cache_path,
-                 mode='csv', directory_polling_interval=1., directory_polling_limit=10):
+                 mode='csv', directory_polling_interval=2., directory_polling_limit=10):
         
-        #executable_path, download_path, cache_path, mode='csv', store_path='./'
-        self.driver = self.make_driver(executable_path, download_path)
-        self.html_loader = sidekit.page_source(self.driver, cache_path)
-        self.mode = mode
-
-        self.crawler = paper_crawler(executable_path, download_path, cache_path)
-        self.directory_polling_interval = directory_polling_interval
-        self.directory_polling_limit = directory_polling_limit
 
         if 'csv' == mode:
 
@@ -114,15 +108,29 @@ class nspider():
 
             pass
 
+        #executable_path, download_path, cache_path, mode='csv', store_path='./'
+        self.driver = self.make_driver(executable_path, str(self.download_dir))
+        self.html_loader = sidekit.page_source(self.driver, cache_path)
+        self.mode = mode
+
+        self.crawler = paper_crawler(executable_path, str(self.download_dir), cache_path)
+        self.directory_polling_interval = directory_polling_interval
+        self.directory_polling_limit = directory_polling_limit
+
 
 
     def __del__(self):
+ #       self.crawler.html_loader.driver.quit()
+ #       self.html_loader.driver.quit()
+        print( type(self.gds),type(self.publication),type(self.source))
+
+        print("self.gds_path:", self.gds_path)
+        print("self.publication_path:", self.publication_path)
+        print("self.source_path:", self.source_path)
+
         self.gds.to_csv(self.gds_path)
         self.publication.to_csv(self.publication_path)
         self.source.to_csv(self.source_path)
-
-        self.crawler.html_loader.driver.quit()
-        self.html_loader.driver.quit()
 
             
     def make_driver(self, executable_path=None, download_path=None):
@@ -154,9 +162,9 @@ class nspider():
 
 
     #private
-    def _get_dom(self, query, param='', domain="https://www.ncbi.nlm.nih.gov"):
+    def _get_dom(self, query, param=None, domain="https://www.ncbi.nlm.nih.gov"):
         print(query, param)
-        src = self.html_loader.get(domain + query%tuple([param]))
+        src = self.html_loader.get(domain + query%tuple([param] if param is not None else []))
         dom = html.fromstring(src.replace("&nbsp;",""))
 
         return dom
@@ -173,24 +181,43 @@ class nspider():
         return dom_chunk
     
 
-    def _register_publication(self, gds, publication, source, ret=None):
+    def _register_dataset(self, gds):
 
-        successful_donwload = []
+        print("==_register_dataset==")
+
 
         if self.mode is 'csv':
 
             gds_uid = set(gds.gds_uid)
-            gds_uid_registered = gds_uid & self.gds_index #ignore
+            print('gds_uid: ', gds_uid)
+            print('self.gds_index :', self.gds_index )
+            gds_uid_registered = gds_uid & self.gds_index 
+
+#            assert ({*()} == gds_uid_registered), "Found duplicats."
+
+            gds = gds[gds_uid_registered != gds.gds_uid]
+            self.gds_index |= gds_uid - gds_uid_registered
+            self.gds = pd.concat([self.gds, gds])
+    
+
+    def _register_publication(self, publication, source, ret=None):
+
+        print("==_register_publication==")
+        print('publication->\n', publication)
+        print('source->\n', source)
+
+
+        if self.mode is 'csv':
 
             publication_doi = set(publication.doi)
-            publication_doi_registered = publication_doi & self.publication_index #get publication from cache
+            publication_doi_registered = publication_doi & self.publication_index 
 
+#            assert ({*()} == publication_doi_registered), "Found duplicats."
 
-            assert ({*()} == gds_uid_registered) & ({*()} == publication_doi_registered), "Found duplicats."
+            publication = publication[publication_doi_registered != publication.doi]
+            source = source[publication_doi_registered != source.doi]
 
-            self.gds_index |= gds_uid
-            self.publication_index |= publication_doi
-
+            self.publication_index |= publication_doi - publication_doi_registered
 
             free_pmc_links = source[source.doi.isin(publication[publication.is_free_pmc].doi)]
             print("source", source)
@@ -203,18 +230,15 @@ class nspider():
             for index, row in free_pmc_ncbi.iterrows():
 
                 status = bool(self._download_paper_and_rename(row.doi, row.link_to_paper))
-                successful_donwload.append([row.doi, status])
 
-            successful_donwload = pd.DataFrame(successful_donwload, columns=['doi', 'successful_donwload'])
-            print(successful_donwload)
+                publication.loc[row.doi == publication.doi, 'successful_donwload'] = status
 
             free_pmc_not_ncbi = free_pmc_links[~is_free_pmc_ncbi]
 
             for doi, subset in free_pmc_not_ncbi.groupby(['doi']):
                 print(doi)
-                print("doi in successful_donwload.doi: ", doi in successful_donwload.doi)
 
-                if doi in successful_donwload.doi.values:
+                if publication[doi == publication.doi].successful_donwload.values[0]:
                     continue
 
                 status = False
@@ -228,12 +252,14 @@ class nspider():
                     else:
                         pass
 
-                successful_donwload.append([[doi, status]])
+                publication.loc[row.doi == publication.doi, 'successful_donwload'] = status
 
-            publication = publication.merge(successful_donwload.reset_index(drop=True), how='left', on='doi')
 
-            self.gds = pd.concat([self.gds, gds])
+            print('publication', publication)
+
+
             self.publication = pd.concat([self.publication, publication])
+            print('self.publication', self.publication)
             self.source = pd.concat([self.source, source])
 
         return None
@@ -261,7 +287,7 @@ class nspider():
             n_scan += 1
 
         if name_new_file is not None:
-            (self.crawler.download_path / name_new_file).rename(self.crawler.download_path / save_as)
+            name_new_file.rename(self.crawler.download_path / (save_as + '.pdf'))
 
         else:
             pass
@@ -293,18 +319,18 @@ class nspider():
 
 
         if not pmid in self.publication.pmid:
-            self._register_publication(*self._get_publication_detail(search_by_pmid, pmid))
 
+            publication, source = self._get_publication_detail(search_pubmed_by_pmid, pmid)
         
         publication_pdfFileObj = self.load_publication(pmid)
 
 
         if publication_pdfFileObj is not None:
 
-            publication_pdfReader = PyPDF2.PdfFileReader(publication_pdfFileObj)
+            publication_pdfReader = pypdf.PdfFileReader(publication_pdfFileObj)
             
             for page_number in range(publication_pdfReader.numPages):
-                pageObj = pdfReader.getPage(page_number) 
+                pageObj = publication_pdfReader.getPage(page_number) 
       
                 publication_text += pageObj.extractText() 
                   
@@ -317,6 +343,26 @@ class nspider():
     
         publication = []
         source = []
+
+        #search_pubmed_by_gds_uid
+        if param in self.gds_index:
+
+            doi = gds[gds_uid == gds.gds_uid].doi.values[0]
+
+            if doi is not None:
+                publication = self.publication[doi == self.publication.doi]
+                source = self.source[doi == self.source.doi]
+
+            return publication.values.tolist(), source.values.tolist()
+
+        #search_pubmed_by_pmid
+        if param in self.publication.pmid.values:
+
+            publication = self.publication[param == self.publication.pmid]
+            source = self.source[publication.doi.values[0] == self.source.doi]
+
+            return publication.values.tolist(), source.values.tolist()
+
     
         dom = self._get_dom(search_pubmed_by, param)
         print("_get_publication_detail: successful get dom.")
@@ -348,17 +394,25 @@ class nspider():
             
             links_to_paper = [element.attrib['href'] for element in dom.cssselect(".portlet > a")]
 
-            publication.append([doi, pmid, is_free_pmc, title, abstruct])
+            publication.append([doi, pmid, is_free_pmc, title, abstruct, None])
 
             for link_to_paper in links_to_paper:
     
                 src_domain = link_to_paper.split('/')[2] #['https:', '', 'academic.oup.com', 'hmg', 'article-lookup', 'doi', '10.1093', 'hmg', 'ddt076']
     
                 source.append([doi, src_domain, link_to_paper])
-    
+
+        if [] == publication:
+            return [], []
+
+        publication_df = pd.DataFrame(publication, columns=columns['publication'])
+        source_df = pd.DataFrame(source, columns=columns['source'])
+
+        self._register_publication(publication_df, source_df)
         return publication, source
 
 
+    #@pysnooper.snoop()
     def _search_relative_publication_with_gds(self, uid, similarity_fn=word_level_comprehension_score):
 
         find_related_publication = False
@@ -366,8 +420,10 @@ class nspider():
         dom = self._get_dom(search_gds_by_uid, uid)
         
         accession_number = dom.cssselect(".rprtid > dd")[0].text
+        print('\n\n\n\n\n\n\naccession_number>>>', accession_number)
         title = dom.cssselect(".title > a")[0]
         to_gse_link = title.attrib['href']
+        print('to_gse_link: ', to_gse_link)
         dataset_title = title.text
         
 
@@ -382,21 +438,22 @@ class nspider():
         
         desc = dom.cssselect(".rprt .desc")
         authers_list = [desc[i].text_content()[:-1].split(', ') for i in range(len(desc))] #delete period by [:-1]
+        print('#authers_list', authers_list)
         matched_idx = []
         
         for idx, authers in enumerate(authers_list):
-            if _is_their_publication(contributors, authers):
+            if self._is_their_publication(contributors, authers):
                 matched_idx.append(idx)
-        
         
         date_intervals = []
         matched_idx_to_date_intervals_idx_table = {}
         
         details = dom.cssselect(".rprt .details")
+        print('#details', len(details))
         
         for i, idx in enumerate(matched_idx):
             text = details[idx].text_content()
-            publication_date_of_paper = regrex_year_month.search(text)[0][0].replace(day=1) #hasn't day info. init by 01.
+            publication_date_of_paper = parse(regrex_year_month.search(text)[0][0]).replace(day=1) #hasn't day info. init by 01.
             date_interval = abs(publication_date_of_paper - publication_date_of_dataset).days
             date_intervals.append(date_interval)
             matched_idx_to_date_intervals_idx_table[idx] = i
@@ -405,7 +462,8 @@ class nspider():
         matched_idx = sorted(matched_idx, key=lambda idx: date_intervals[matched_idx_to_date_intervals_idx_table[idx]])
         
         
-        titles = dom.cssselect(".rprt .tile a")
+        titles = dom.cssselect(".rprt .title a")
+        print('#titles', titles)
         pmids = [titles[idx].attrib['href'].split('/')[-1] for idx in matched_idx]
 
         for pmid in pmids:
@@ -420,7 +478,7 @@ class nspider():
 
         for pmid in pmids:
 
-            abstruct = self.get_info(pmid, type='abstract')
+            abstruct = self.publication[pmid == self.publication.pmid].abstract.values[0]
             similarity.append(similarity_fn(dataset_title, abstruct))
 
         max_idx = max(range(len(similarity)), key=lambda x: similarity[x])
@@ -442,16 +500,28 @@ class nspider():
         for gds_uid in gds_uids:
     
             _publication, _source = self._get_publication_detail(search_pubmed_by_gds_uid, gds_uid)
-            _gds = [[gds_uid, None, None, _publication[0][0]]]
-    
-            if [] == _gds:
+            print("##!#  _publicationdoi", type(_publication), '\n\n\n')
+            doi = _publication[:1][:1]
+            print("#!#  doi", doi, '\n\n\n')
+            if [] == _publication:
+                doi = None
+            else:
+                doi = _publication[0][0]
+
+            _gds = [[gds_uid, None, None, doi]] #[:1][:1] for avoiding out of index error
+
+            print('dDOI!!!!!!!!!!!!!!!!!!', doi)
+     
+            if doi is None:
                 binded.append(False)
             else:
                 binded.append(True)
+
+                gds += _gds
+                publication += _publication
+                source += _source
     
-            gds += _gds
-            publication += _publication
-            source += _source
+            
 
         print(_publication, _source)
 
@@ -466,14 +536,22 @@ class nspider():
 
             row = binding_check_table.iloc[idx]
 
+            print('not row.is_binded', not row.is_binded)
+
             if not row.is_binded:
 
-                pmid, score, find_related_publication = self._search_relative_publication_with_gds(no_binded_entry)
+                pmid, score, find_related_publication = self._search_relative_publication_with_gds(row.gds_uid)
                 
                 if find_related_publication:
 
-                    _publication, _source = self._get_publication_detail(search_by_pmid, pmid)
-                    _gds = [[row.gds_uid, None, None, _publication[0][0]]]
+                    _publication, _source = self._get_publication_detail(search_pubmed_by_pmid, pmid)
+                    print("#!#  _publication", type(_publication), '\n\n\n')
+                    if [] == _publication:
+                        doi = None
+                    else:
+                        doi = _publication[0][0]
+                    print("#!#  doi", doi, '\n\n\n')
+                    _gds = [[row.gds_uid, None, None, doi]]
 
                     gds += _gds
                     publication += _publication
@@ -481,12 +559,8 @@ class nspider():
 
                 binding_check_table.find_related_publication.at[idx] = find_related_publication
 
-        print(gds, columns['gds'])
         gds = pd.DataFrame(gds, columns=columns['gds'])
-        publication = pd.DataFrame(publication, columns=columns['publication'])
-        source = pd.DataFrame(source, columns=columns['source'])
-    
-        self._register_publication(gds, publication, source)
+        self._register_dataset(gds)
 
         return None
 
@@ -494,7 +568,7 @@ class nspider():
     #public
     def load_publication(self, identifier):
 
-        if check_identifier(regrex_doi_format, identifier):
+        if check_identifier(regrex_doi_format, identifier.replace('_slash', '/')):
             type_of_identifier = 'doi'
         elif check_identifier(regrex_pmid_format, identifier):
             type_of_identifier = 'pmid'
@@ -503,11 +577,18 @@ class nspider():
 
         pdfFileObj = None
 
-        if 'csv' == mode:
+        if 'csv' == self.mode:
             entry = self.publication[self.publication[type_of_identifier] == identifier]
-            if entry.successful_download:
+            print('entry', entry)
+            if entry.successful_donwload.values[0]:
 
-                fpath = self.download_dir + entry.doi + '.pdf'
+                print('entry.doi.values', entry.doi.values[0])
+
+                print(self.download_dir)
+
+                print(os.getcwd())
+
+                fpath = self.download_dir / (entry.doi.values[0] + '.pdf')
                 pdfFileObj = open(fpath, 'rb')
 
             else:
@@ -527,7 +608,8 @@ class nspider():
 
             self._register_publication_by_gds_uid([gds_uid])            
 
-        doi = self.gds[gds_uid == self.gds.gds_uid].doi
+        doi = self.gds[gds_uid == self.gds.gds_uid].doi.values[0]
+        print('\n\n\n\n', doi, '\n\n\n\n')
         pmid = self.publication[doi == self.publication.doi].pmid
 
         return pmid
@@ -542,4 +624,19 @@ class nspider():
         gds_uid = self.gds[doi == self.gds.doi].gds_uid
 
         return gds_uid
+    
+    
+
+if __name__ == '__main__':
+    import shutil
+    
+    shutil.rmtree('./work/publication/')
+    shutil.rmtree('./work/database/')
+    os.mkdir('./work/publication/')
+
+    spider = nspider('./work', "/home/poo/Downloads/chromedriver", 'download/', 'cache/', directory_polling_interval=5., directory_polling_limit=10)
+#print(spider.get_pmid_by_gds_uid('200011474'))
+    print(spider.get_pmid_by_gds_uid('200030845'))
+
+    del spider
 

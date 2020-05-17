@@ -127,7 +127,7 @@ class paper_crawler():
 
         self.file_list = curr_file_list
 
-        return new_file
+        return new_file #example: PosixPath('download/pone.0118832.pdf')
 
 
     def get_link_xpath_trip(self, dom, orderd_xpath_list):
