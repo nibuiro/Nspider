@@ -1,0 +1,451 @@
+<html><head><link rel="stylesheet" type="text/css" href="/core/jig/1.15.0/css/jig.min.css">
+    
+    <style type="text/css">
+      a { text-decoration: none; }
+	.bordergc {background-color: #6699CC;}
+	.bordergd {background-color: #B6C7E5;}
+	.borderge {background-color: #EEF3FB;}
+	.bordergf {background-color: #FFFFFF;}
+	.bordergg {background-color: #CCCCCC;}
+      .small8b { font-size:8pt;
+                font-family: ariel,helvetica,sans-serif;
+                color:#6633cc;
+              }
+      .small8db { font-size:8pt;
+                font-family: ariel,helvetica,sans-serif;
+                color:#4411aa;
+              }
+
+    </style>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="keywords" content="NCBI GEO Gene Expression Omnibus microarray oligonucleotide array SAGE">
+    <meta name="description" content="NCBI's Gene Expression Omnibus (GEO) is a public archive and resource for gene expression data.">
+
+<meta name="ncbi_app" content="geo">
+<meta name="ncbi_pdid" content="full">
+<meta name="ncbi_phid" content="07517CED003A95A10000000000000001">
+<meta name="ncbi_sessionid" content="3E90A4CE0038A5F3_25395SID">
+
+    <title>
+    GEO Accession viewer
+    </title>
+    <link rel="stylesheet" href="/corehtml/ncbi.css">
+    <!-- GEO_SCRIPT -->
+
+<script language="JavaScript1.2" src="/coreweb/javascript/imagemouseover.js"></script>
+
+<script language="JavaScript1.2" src="/coreweb/javascript/show_message.js"></script>
+
+<script type="text/javascript" src="/corehtml/jsutils/utils.1.js"></script>
+
+<script type="text/javascript" src="/corehtml/jsutils/remote_data_provider.1.js"></script>
+
+<script language="JavaScript1.2" src="/geo/js/help_def_messages.js"></script><script async="1" src="https://www.google-analytics.com/analytics.js"></script></head><body background="/coreweb/template1/pix/bg_main3.gif" topmargin="20" marginheight="20" id="ui-ncbiexternallink-1"><div id="viewer" style="background-color:#cccccc;marginleft:0;visibility:hidden;position:absolute;width:0;height:0;z-index:1;overflow:hidden" onmouseover="clearTimeout(RPopUpWindow_timerID)" onclick="RPopUpWindow_doNOThideFunc()" onmouseout="RPopUpWindow_Hide_Layer()"></div>
+
+<script type="text/javascript">
+    window.onload = function () {
+        //old smaller style banner
+        display_global_alert = false;
+        
+        jQuery.getScript("/core/alerts/alerts.js", function () {
+            galert(['#galerts_table','body > *:nth-child(1)'])
+        });
+    }
+</script>
+
+
+
+<link rel="STYLESHEET" href="../info/geo_style.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="acc.css">
+  <script language="Javascript">
+
+  function OnFormFieldChange()
+  {
+    var view = document.getElementById("view");
+
+    if(document.getElementById("ViewOptions").form.value == 'html')
+    {
+        view.remove(3);
+        view.remove(2);
+    }
+    else
+    {
+        var NewOption = document.createElement("OPTION");
+
+        NewOption.text = "Full";
+        NewOption.value = "full";
+
+        try
+        {
+            view.add(NewOption, null);
+        }
+        catch(ex)
+        {
+            view.add(NewOption);
+        }
+
+        NewOption = document.createElement("OPTION");
+
+        NewOption.text = "Data";
+        NewOption.value = "data";
+
+        try
+        {
+            view.add(NewOption, null);
+        }
+        catch(ex)
+        {
+            view.add(NewOption);
+        }
+    }
+  }
+
+  function SubmitViewOptionsForm()
+  {
+	var form = document.forms.ViewOptions;
+    if(form.form.value == 'html')
+    {
+		form.form.setAttribute('disabled','disabled');
+		if (form.view.value == 'quick') {
+			form.view.setAttribute('disabled','disabled');
+		}
+		if (form.targ.value == 'self') {
+			form.targ.setAttribute('disabled','disabled');
+		}
+        var token = document.getElementById("token_input");
+        if (token) {
+            form.token.value = token.value;
+        } else {
+            form.token.setAttribute('disabled','disabled');
+        }
+        form.submit();
+    }
+    else
+    {
+        window.open("acc.cgi?acc=" + form.acc.value + "&targ=" + form.targ.value +
+                  "&form=" + form.form.value + "&view=" + form.view.value, "_self");
+    }
+
+    return false;
+  }
+  
+  function ViewOptionsFormKeyDown(event)
+  {
+	if (event == undefined)
+	{    
+		event = window.event;
+	}
+	if (event.keyCode == 13)
+	{
+		SubmitViewOptionsForm();
+		return false;
+	}
+  };
+
+  function OpenFTP(url)
+  {
+    window.open(url, '_blank');
+  }
+
+  function OpenLink(url, where)
+  {
+    window.open(url, where);
+  }
+
+  utils.addEvent(window, "load", OnFormFieldChange)
+  </script>
+
+
+
+
+
+<script type="text/javascript" src="/core/jig/1.15.0/js/jig.min.js"></script>
+<script type="text/javascript" src="/corehtml/pmc/granthub/v1/granthubsearch.min.js"></script>
+<script type="text/javascript" src="/geo/js/dd_menu.js"></script>
+	<table width="740" border="0" cellspacing="0" cellpadding="0" align="center">
+			<tbody><tr>
+				<td>
+					<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+						<tbody><tr>
+							<td><a href="/"><img src="/geo/img/ncbi_logo.gif" alt="NCBI Logo" width="145" height="66" border="0"></a></td>
+							<td width="100%" align="center" valign="middle" nowrap="" background="/coreweb/template1/pix/top_bg_white.gif"><img src="/coreweb/template1/pix/pixel.gif" width="550" height="1" alt="" border="0"><br>
+								<a href="/geo/"><img src="/geo/img/geo_main.gif" alt="GEO Logo" border="0"></a>
+							</td>
+							<td align="right" background="/coreweb/template1/pix/top_bg_white.gif"><img src="/coreweb/template1/pix/top_right.gif" alt="" width="5" height="66" border="0"></td>
+						</tr>
+					</tbody></table>
+					<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+						<tbody><tr>
+							<td><img src="/coreweb/template1/pix/top2_left.gif" width="601" height="2" alt="" border="0"></td>
+							<td width="100%" background="/coreweb/template1/pix/top2_mid_bg.gif"><img src="/coreweb/template1/pix/pixel.gif" width="1" height="1" alt="" border="0"></td>
+							<td align="right"><img src="/coreweb/template1/pix/top2_right.gif" alt="" width="14" height="2" border="0"></td>
+						</tr>
+					</tbody></table>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" id="galerts_table">
+					</table><table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+						<tbody><tr>
+							<td><img src="/coreweb/template1/pix/top3_ulm_no_a.gif" width="145" height="16" alt="" border="0" usemap="#unlmenu" name="unl_menu_pix"></td>
+							<td background="/coreweb/template1/pix/top3_mainmenu_mid_bg.gif"><img src="/coreweb/template1/pix/top3_mainmenu_left.gif" width="3" height="16" alt="" border="0"></td>
+							<td width="100%" valign="middle" nowrap="" background="/coreweb/template1/pix/top3_mainmenu_mid_bg.gif">
+
+					<!-- GEO Navigation -->
+			<ul id="geo_nav_bar">
+				<li><a href="#">GEO Publications</a>
+					<ul class="sublist">
+						<li><a href="/geo/info/GEOHandoutFinal.pdf">Handout</a></li>
+						<li><a href="http://nar.oxfordjournals.org/content/41/D1/D991.full">NAR 2013 (latest)</a></li>
+						<li><a href="http://nar.oupjournals.org/cgi/content/full/30/1/207?ijkey=oxMPOWseARs7o&amp;keytype=ref&amp;siteid=nar">NAR 2002 (original)</a></li>
+						<li><a href="/pmc/3531084,3341798,3013736,2686538,2270403,1669752,1619900,1619899,539976,99122">All publications</a></li>
+					</ul>
+				</li>
+				<li><a href="/geo/info/faq.html">FAQ</a></li>
+				<li><a href="/geo/info/MIAME.html" title="Minimum Information About a Microarray Experiment">MIAME</a></li>
+				<li><a href="mailto:geo@ncbi.nlm.nih.gov">Email GEO</a></li>
+			</ul>
+			<!-- END GEO Navigation -->
+
+                    </td>
+                    <td background="/coreweb/template1/pix/top3_mainmenu_mid_bg.gif" align="right"><img src="/coreweb/template1/pix/top3_mainmenu_right.gif" width="5" height="16" alt="" border="0"></td>
+                </tr>
+            </tbody></table>
+            
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+                <tbody><tr>
+                    <td><img src="/coreweb/template1/pix/top4_ulm_left.gif" width="145" height="4" alt="" border="0"></td>
+                    <td width="100%" background="/coreweb/template1/pix/top4_mid_bg.gif"><img src="/coreweb/template1/pix/pixel.gif" width="1" height="1" alt="" border="0"></td>
+                    <td align="right" background="/coreweb/template1/pix/top4_mid_bg.gif"><img src="/coreweb/template1/pix/top4_ulm_right.gif" width="5" height="4" alt="" border="0"></td>
+                </tr>
+            </tbody></table>
+    
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+                <tbody><tr>
+                    <td width="1" background="/coreweb/template1/pix/main_left_bg.gif"><img src="/coreweb/template1/pix/main_left_bg.gif" alt="" width="4" height="3" border="0"></td>
+                    <td width="10000" bgcolor="#F0F8FF">
+                        <table cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><font class="Top_Navigation_text" color="#2F6E87" face="Verdana" size="+1">&nbsp;&nbsp;&nbsp;<a href="/">NCBI</a> &gt; <a href="/geo"><font color="">GEO</font></a> &gt; <a href="acc.cgi"><b>Accession Display</b></a><a href="javascript:RPopUpWindow_Set(geologinbar_location,260,120,'','','#E1EAE6','','#538AA9','MessageBox2');" onmouseout="RPopUpWindow_Stop()"><img alt="Help" height="11" src="/coreweb/images/long_help4.gif" style="border: none" width="19"></a></font></td>
+<td align="right">Not logged in | <a href="/geo/submitter?ix=12iRqRMe1IMedOJ5fErhruyxeZ85L1KB40jrSDfVX7czZdaboYlNAUdZUrIHYk5LMY2crxbeen0P8uzSVwD">Login</a><a href="javascript:RPopUpWindow_Set(geologinbar_login,260,200,'','','#E1EAE6','','#538AA9','MessageBox2');" onmouseout="RPopUpWindow_Stop()"><img alt="Help" height="11" src="/coreweb/images/long_help4.gif" style="border: none" width="19"></a></td>
+</tr></tbody></table>
+                    </td>
+                    <td width="1" background="/coreweb/template1/pix/main_right_bg.gif"><img src="/coreweb/template1/pix/main_right_bg.gif" width="4" height="3" alt="" border="0"></td>
+                </tr>
+                <tr>
+                    <td background="/coreweb/template1/pix/main_left_bg.gif"><img src="/coreweb/template1/pix/main_left_bg.gif" width="4" height="1" alt="" border="0"></td>
+                    <td width="10000" bgcolor="#E0EEEE"><img src="/coreweb/template1/pix/pixel.gif" width="1" height="1" alt="" border="0"></td>
+                    <td align="right" background="/coreweb/template1/pix/main_right_bg.gif"><img src="/coreweb/template1/pix/main_right_bg.gif" alt="" width="4" height="1" border="0"></td>
+                </tr>
+
+                <tr>
+                    <td background="/coreweb/template1/pix/main_left_bg.gif"><img src="/coreweb/template1/pix/main_left_bg.gif" width="4" height="3" alt="" border="0"></td>
+                    <td width="100%" bgcolor="White">
+                        <table width="98%" border="0" align="center">
+                            <tbody><tr>
+                                <td>
+                                    <table border="0" cellspacing="0" cellpadding="0" align="right" width="100%">
+                                        <tbody><tr>
+                                            <td>
+
+ <script type="text/javascript" src="acc.js"></script>
+ <span id="msg_err" style="color:red"></span>
+ <span id="msg_info" style="color:blue"></span>
+<table cellpadding="0" cellspacing="0" style="border: 1px solid #C0F8FF"><tbody><tr><td><img alt=" " height="35" src="/coreweb/template1/pix/pixel.gif" width="1"></td>
+<td bgcolor="#F0F8FF" width="100%"><font color="#0066CC" face="Arial" size="1"><div id="HelpMessage" style="font: 11px/11px arial, sans-serif"><strong>GEO help:</strong> Mouse over screen elements for information.</div></font></td>
+</tr></tbody></table>
+<form action="acc.cgi" enctype="application/x-www-form-urlencoded" id="ViewOptions" method="POST" name="ViewOptions" target="_self"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td></td>
+<td bgcolor="#CCCCCC" nowrap="" valign="middle" width="100%"><table align="left" border="0" cellpadding="0" cellspacing="0"><tbody><tr><td nowrap=""><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td valign="middle"><input id="token" name="token" type="hidden" value=""><label for="scope">Scope: </label><select id="scope" name="targ" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_scope)" style="font-size: 10px"><option selected="" value="self">Self</option>
+<option value="gpl">Platform</option>
+<option value="gsm">Samples</option>
+<option value="gse">Series</option>
+<option value="all">Family</option>
+</select>
+&nbsp;&nbsp;<label for="form">Format: </label><select id="form" name="form" onchange="OnFormFieldChange()" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_format)" style="font-size: 10px"><option value="html">HTML</option>
+<option value="text">SOFT</option>
+<option value="xml">MINiML</option>
+</select>
+&nbsp;&nbsp;<label for="view">Amount: </label><select id="view" name="view" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_amount)" style="font-size: 10px"><option value="brief">Brief</option>
+<option selected="" value="quick">Quick</option>
+</select>
+&nbsp;<label for="geo_acc">GEO accession: </label><input id="geo_acc" name="acc" onkeydown="ViewOptionsFormKeyDown(event)" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_acc)" style="font-size: 10px" type="text" value="GSE30845">&nbsp;&nbsp;</td>
+<td valign="middle"><img alt="Go" border="0" onclick="SubmitViewOptionsForm()" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_go)" src="/geo/img/buttons/go_button.gif"></td>
+</tr></tbody></table></td></tr></tbody></table></td>
+</tr></tbody></table></form>
+    <table><tbody><tr><td><table cellpadding="2" cellspacing="0" width="600"><tbody><tr bgcolor="#cccccc" valign="top"><td colspan="2"><table width="600"><tbody><tr><td><strong class="acc" id="GSE30845"><a href="/geo/query/acc.cgi?acc=GSE30845" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_recenter)">Series GSE30845</a></strong></td>
+<td></td>
+<td align="right" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_gds)"><a href="/gds/?term=GSE30845[Accession]">Query DataSets for GSE30845</a></td>
+</tr></tbody></table></td></tr>
+<tr valign="top"><td>Status</td>
+<td>Public on Feb 28, 2013</td>
+</tr>
+<tr valign="top"><td nowrap="">Title</td>
+<td style="text-align: justify">Cav3.2 T-type calcium channel-dependent gene expression after retrieval of context-associated memory (right hippocampus)</td>
+</tr>
+<tr valign="top"><td nowrap="">Organism</td>
+<td><a href="/Taxonomy/Browser/wwwtax.cgi?mode=Info&amp;id=10090" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_organismus)">Mus musculus</a></td>
+</tr>
+<tr valign="top"><td nowrap="">Experiment type</td>
+<td>Expression profiling by array<br></td>
+</tr>
+<tr valign="top"><td nowrap="">Summary</td>
+<td style="text-align: justify">Among all voltage-gated calcium channels, the T-type Ca2+ channels encoded by the Cav3 genes are highly expressed in the hippocampus, which is associated with contextual, temporal and spatial learning and memory. However, the specific involvement of the Cav3.2 T-type Ca2+ channel in these hippocampus-dependent types of learning and memory remains unclear. To investigate the functional role of the 1H channel in learning and memory, we subjected Cav3.2 homozygous, heterozygous knockout and their wild-type littermates to hippocampus-dependent behavioral tasks, including trace fear conditioning (TFC), the Morris water-maze and passive avoidance. The Cav3.2-/- mice performed normally in the Morris water-maze and auditory trace fear conditioning tasks but were impaired in the context-cued trace fear conditioning, step-down and step-through passive avoidance tasks. Furthermore, long-term potentiation (LTP) could be induced for 180 minutes in hippocampal slices of WTs and Cav3.2+/- mice, whereas LTP persisted for only 120 minutes in Cav3.2-/- mice. To determine whether the hippocampal formation is responsible for the impaired behavioral phenotypes , we next performed experiments locally knock down function of the Cav3.2 T-type Ca2+ channel in the hippocampus. Wild-type mice infused with mibefradil exhibited similar behaviors as homozygous knockouts. Finally, microarray analyses indicated that Cav3.2-/- and WT mice presented distinct hippocampal transcriptome profiles. Taken together, our results demonstrate that retrieval of context-associated memory is dependent on the Cav3.2 T-type Ca2+ channel.<br></td>
+</tr>
+<tr valign="top"><td nowrap="">&nbsp;</td>
+<td></td>
+</tr>
+<tr valign="top"><td nowrap="">Overall design</td>
+<td style="text-align: justify">After WT and Cav3.2 KO mice retrieval of context-associated memory, three right hippocampi of each group were dissected, pooled together and homogenized. The products of experimental and naive groups were used to acquire expression profiles of a total of 29,922 unique genes. Two replicates per group.<br></td>
+</tr>
+<tr valign="top"><td nowrap="">&nbsp;</td>
+<td></td>
+</tr>
+<tr valign="top"><td>Contributor(s)</td>
+<td><a href="/pubmed/?term=Liu IY[Author]">Liu IY</a>, <a href="/pubmed/?term=Chen C[Author]">Chen C</a>, <a href="/pubmed/?term=Chang C[Author]">Chang C</a>, <a href="/pubmed/?term=Chung N[Author]">Chung N</a></td>
+</tr>
+<tr valign="top"><td>Citation missing</td>
+<td class="message" id="pmidCell">Has this study been published? Please <a href="/geo/submitter">login</a> to update or <a href="mailto:geo@ncbi.nlm.nih.gov?subject=Citation for GSE30845 [not logged in]&amp;body=Thank you very much for helping to keep GEO citation links up-to-date. Please enter the PubMed ID (PMID) or full citation for GSE30845 below, and we will update the record accordingly within the next day or two. The PubMed ID or citation is:
+">notify GEO</a>.</td>
+</tr>
+<tr bgcolor="#eeeeee" valign="top"><td>Submission date</td>
+<td>Jul 21, 2011</td>
+</tr>
+<tr bgcolor="#eeeeee" valign="top"><td>Last update date</td>
+<td>Mar 01, 2013</td>
+</tr>
+<tr bgcolor="#eeeeee" valign="top"><td>Contact name</td>
+<td>Ingrid Liu</td>
+</tr>
+<tr bgcolor="#eeeeee" valign="top"><td nowrap="">E-mail(s)</td>
+<td><a href="mailto:ycliu@mail.tcu.edu.tw">ycliu@mail.tcu.edu.tw</a><br></td>
+</tr>
+<tr bgcolor="#eeeeee" valign="top"><td nowrap="">Organization name</td>
+<td style="text-align: justify">Tzu Chi University<br></td>
+</tr>
+<tr bgcolor="#eeeeee" valign="top"><td nowrap="">Department</td>
+<td style="text-align: justify">Molecular Biology and Human Genetics<br></td>
+</tr>
+<tr bgcolor="#eeeeee" valign="top"><td nowrap="">Street address</td>
+<td style="text-align: justify">E411, 701, Section 3 Chung Yang Road<br></td>
+</tr>
+<tr bgcolor="#eeeeee" valign="top"><td nowrap="">City</td>
+<td style="text-align: justify">Hualien</td>
+</tr>
+<tr bgcolor="#eeeeee" valign="top"><td nowrap="">ZIP/Postal code</td>
+<td style="text-align: justify">970</td>
+</tr>
+<tr bgcolor="#eeeeee" valign="top"><td nowrap="">Country</td>
+<td style="text-align: justify">Taiwan</td>
+</tr>
+<tr valign="top"><td nowrap="">&nbsp;</td>
+<td></td>
+</tr>
+<tr valign="top"><td>Platforms (1)</td>
+<td onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_recenter)"><table cellpadding="3" style="position:relative;top:-5px;left:-5px"><tbody><tr><td valign="top"><a href="/geo/query/acc.cgi?acc=GPL6845" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_recenter)">GPL6845</a></td>
+<td valign="top">Phalanx Mouse OneArray</td>
+</tr></tbody></table></td>
+</tr>
+<tr valign="top"><td>Samples (8)<div id="L1865867415divshown" name="L1865867415divshown" style="display: none"><a href="javascript:HandleVisibilityChangeL1865867415()"><img alt="Less..." border="0" src="/geo/img/minus_close.gif">&nbsp;Less...</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+<div id="L1865867415divhidden" name="L1865867415divhidden" style="display: block"><a href="javascript:HandleVisibilityChangeL1865867415()"><img alt="More..." border="0" src="/geo/img/plus_small.gif">&nbsp;More...</a></div>
+</td>
+<td onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_recenter)"><table cellpadding="3" style="position:relative;top:-5px;left:-5px"><tbody><tr><td valign="top"><a href="/geo/query/acc.cgi?acc=GSM765378" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_recenter)">GSM765378</a></td>
+<td valign="top">WT_right hippocampi_naive_rep1</td>
+</tr>
+<tr><td valign="top"><a href="/geo/query/acc.cgi?acc=GSM765379" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_recenter)">GSM765379</a></td>
+<td valign="top">WT_right hippocampi_naive_rep2</td>
+</tr>
+<tr><td valign="top"><a href="/geo/query/acc.cgi?acc=GSM765380" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_recenter)">GSM765380</a></td>
+<td valign="top">WT_right hippocampi_TFC_rep1</td>
+</tr>
+</tbody></table>
+<script language="Javascript" type="text/javascript">
+<!--
+function HandleVisibilityChangeL1865867415(){if(document.getElementById("L1865867415div").style.display == "block"){document.getElementById("L1865867415div").style.display = "none";document.getElementById("L1865867415divhidden").style.display = "block";document.getElementById("L1865867415divshown").style.display = "none";}else{document.getElementById("L1865867415div").style.display = "block";document.getElementById("L1865867415divhidden").style.display = "none";document.getElementById("L1865867415divshown").style.display = "block";}}
+-->
+</script>
+<div id="L1865867415div" name="L1865867415div" style="display: none"><table cellpadding="3" style="position:relative;top:-5px;left:-5px"><tbody><tr><td valign="top"><a href="/geo/query/acc.cgi?acc=GSM765381" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_recenter)">GSM765381</a></td>
+<td valign="top">WT_right hippocampi_TFC_rep2</td>
+</tr>
+<tr><td valign="top"><a href="/geo/query/acc.cgi?acc=GSM765382" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_recenter)">GSM765382</a></td>
+<td valign="top">KO_right hippocampi_naive_rep1</td>
+</tr>
+<tr><td valign="top"><a href="/geo/query/acc.cgi?acc=GSM765383" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_recenter)">GSM765383</a></td>
+<td valign="top">KO_right hippocampi_naive_rep2</td>
+</tr>
+<tr><td valign="top"><a href="/geo/query/acc.cgi?acc=GSM765384" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_recenter)">GSM765384</a></td>
+<td valign="top">KO_right hippocampi_TFC_rep1</td>
+</tr>
+<tr><td valign="top"><a href="/geo/query/acc.cgi?acc=GSM765385" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_recenter)">GSM765385</a></td>
+<td valign="top">KO_right hippocampi_TFC_rep2</td>
+</tr>
+</tbody></table></div>
+</td>
+</tr>
+<tr valign="top"><td colspan="2">This SubSeries is part of SuperSeries:</td></tr>
+<tr valign="top"><td colspan="2" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_recenter)"><table cellpadding="3" style="position:relative;top:-5px;left:-5px"><tbody><tr><td valign="top"><a href="/geo/query/acc.cgi?acc=GSE30846" onmouseout="onLinkOut('HelpMessage' , geo_empty_help)" onmouseover="onLinkOver('HelpMessage' , geoaxema_recenter)">GSE30846</a></td>
+<td valign="top">Cav3.2 T-type calcium channel-dependent gene expression after retrieval of context-associated memory</td>
+</tr></tbody></table></td></tr>
+<tr valign="top"><td colspan="2"><strong>Relations</strong></td></tr>
+<tr valign="top"><td>BioProject</td>
+<td><a href="https://www.ncbi.nlm.nih.gov/bioproject/PRJNA154557">PRJNA154557</a></td>
+</tr>
+</tbody></table>
+<br><span id="geo2r"></span><table cellspacing="3" width="600"><tbody><tr bgcolor="#eeeeee"><td><strong>Download family</strong></td>
+<td><strong>Format</strong></td>
+</tr>
+<tr><td><a href="ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE30nnn/GSE30845/soft/" target="_blank">SOFT formatted family file(s)</a></td>
+<td>SOFT<a href="javascript:RPopUpWindow_Set(geoaxema_famsoft,260,120,'','','#E1EAE6','','#538AA9','MessageBox2');" onmouseout="RPopUpWindow_Stop()"><img alt="Help" height="11" src="/coreweb/images/long_help4.gif" style="border: none" width="19"></a></td>
+</tr>
+<tr><td><a href="ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE30nnn/GSE30845/miniml/" target="_blank">MINiML formatted family file(s)</a></td>
+<td>MINiML<a href="javascript:RPopUpWindow_Set(geoaxema_famminiml,260,120,'','','#E1EAE6','','#538AA9','MessageBox2');" onmouseout="RPopUpWindow_Stop()"><img alt="Help" height="11" src="/coreweb/images/long_help4.gif" style="border: none" width="19"></a></td>
+</tr>
+<tr><td><a href="ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE30nnn/GSE30845/matrix/" target="_blank">Series Matrix File(s)</a></td>
+<td>TXT<a href="javascript:RPopUpWindow_Set(geoaxema_fammatrix,260,210,'','','#E1EAE6','','#538AA9','MessageBox2');" onmouseout="RPopUpWindow_Stop()"><img alt="Help" height="11" src="/coreweb/images/long_help4.gif" style="border: none" width="19"></a></td>
+</tr>
+</tbody></table>
+<br><table cellpadding="2" cellspacing="2" width="600"><tbody><tr bgcolor="#eeeeee" valign="top"><td align="middle" bgcolor="#CCCCCC"><strong>Supplementary file</strong></td>
+<td align="middle" bgcolor="#CCCCCC"><strong>Size</strong></td>
+<td align="middle" bgcolor="#CCCCCC"><strong>Download</strong></td>
+<td align="middle" bgcolor="#CCCCCC"><strong>File type/resource</strong></td>
+</tr>
+<tr valign="top"><td bgcolor="#DEEBDC">GSE30845_RAW.tar</td>
+<td bgcolor="#DEEBDC" title="22640640">21.6 Mb</td>
+<td bgcolor="#DEEBDC"><a href="/geo/download/?acc=GSE30845&amp;format=file">(http)</a><a id="customDl" href="">(custom)</a></td>
+<td bgcolor="#DEEBDC">TAR (of GPR)</td>
+</tr>
+<tr><td class="message">Raw data provided as supplementary file</td></tr>
+<tr><td class="message">Processed data included within Sample table</td></tr>
+</tbody></table>
+<span id="customDlArea"></span><br></td></tr></tbody></table>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    </td>
+                </tr>
+            </tbody></table>
+        </td>
+        <td background="/coreweb/template1/pix/main_right_bg.gif"><img src="/coreweb/template1/pix/main_right_bg.gif" width="4" height="3" alt="" border="0"></td>
+    </tr>
+    <tr>
+        <td background="/coreweb/template1/pix/but_left.gif"><img src="/coreweb/template1/pix/but_left.gif" width="4" height="4" alt="" border="0"></td>
+        <td width="10000" bgcolor="#FFFFFF" background="/coreweb/template1/pix/but_mid_bg.gif"><img src="/coreweb/template1/pix/pixel.gif" width="1" height="1" alt="" border="0"></td>
+        <td align="right" background="/coreweb/template1/pix/but_right.gif"><img src="/coreweb/template1/pix/but_right.gif" alt="" width="4" height="4" border="0"></td>
+    </tr>
+</tbody></table>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+	<tbody><tr>
+        <td width="99%"><img src="/coreweb/template1/pix/pixel.gif" width="1" height="1" alt="" border="0"></td><td valign="top" align="right" nowrap="">
+	        <span class="HELPBAR">|<a href="https://www.nlm.nih.gov"> NLM </a>|<a href="https://www.nih.gov" class="HELPBAR"> NIH </a>|<a href="mailto:geo@ncbi.nlm.nih.gov" class="HELPBAR"> GEO Help </a>|<a href="/geo/info/disclaimer.html" class="HELPBAR"> Disclaimer </a>|<a href="https://www.nlm.nih.gov/accessibility.html" class="HELPBAR"> Accessibility </a>|</span><br>
+        </td>
+	</tr>
+</tbody></table>
+
+
+<map name="unlmenu">
+<area alt="NCBI Home" coords="2,0,39,15" href="/" onmouseover="changpics(unl_menu_pix, unl_menu_home_a)" onmouseout="changpics(unl_menu_pix, unl_menu_noa)">
+<area alt="NCBI Search" coords="40,0,91,15" href="/ncbisearch/" onmouseover="changpics(unl_menu_pix, unl_menu_search_a)" onmouseout="changpics(unl_menu_pix, unl_menu_noa)">
+<area alt="NCBI SiteMap" coords="92,0,143,15" href="/Sitemap/" onmouseover="changpics(unl_menu_pix, unl_menu_sitemap_a)" onmouseout="changpics(unl_menu_pix, unl_menu_noa)">
+</map>
+
+<script type="text/javascript" src="/portal/portal3rc.fcgi/rlib/js/InstrumentNCBIBaseJS/InstrumentPageStarterJS.js"> </script>
+
+
+
+
+</td></tr></tbody></table><div id="ZN_dikYWqsjiUWN0Q5"></div><div style="display: none;">External link. Please review our <a href="https://www.nlm.nih.gov/privacy.html">privacy policy</a>.</div><script type="text/javascript" src="https://zndikYWqsjiUWN0Q5-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_dikYWqsjiUWN0Q5"></script></body></html>
